@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { ar } from '@payloadcms/translations/languages/ar'
 import { en } from '@payloadcms/translations/languages/en'
@@ -44,13 +45,14 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL || '',
-    },
-    // Production applies migrations on start. In development the schema is pushed automatically.
-    prodMigrations: migrations,
-  }),
+  // DATABASE_URL=file:./local.db → SQLite file for running on a laptop with nothing installed.
+  // Anything else → Postgres (production). Migrations in src/migrations are for Postgres.
+  db: (process.env.DATABASE_URL || '').startsWith('file:')
+    ? sqliteAdapter({ client: { url: process.env.DATABASE_URL || '' } })
+    : postgresAdapter({
+        pool: { connectionString: process.env.DATABASE_URL || '' },
+        prodMigrations: migrations,
+      }),
   sharp,
   plugins: [],
 })

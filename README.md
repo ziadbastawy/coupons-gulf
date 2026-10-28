@@ -28,15 +28,20 @@
 - **الأداء:** الصفحات بتتكاش (ISR) وبتتحدث كل 10 دقايق، أو فوراً لما تعدّل حاجة في لوحة التحكم.
 - **لوحة التحكم:** بالعربي، والمحتوى بلغتين (اختار اللغة من فوق في صفحة التعديل).
 
-## تشغيل محلي
+## تشغيل محلي (من غير أي قاعدة بيانات)
+
+محتاج بس Node.js 22 أو أحدث.
 
 ```bash
-cp .env.example .env          # وحط DATABASE_URL و PAYLOAD_SECRET
+git clone https://github.com/ziadbastawy/coupons-gulf
+cd coupons-gulf
+printf "DATABASE_URL=file:./local.db\nPAYLOAD_SECRET=localdevsecret123\nNEXT_PUBLIC_SITE_URL=http://localhost:3000\n" > .env
 npm install
-npm run dev                   # http://localhost:3000
-npm run seed                  # بيانات تجربة (اختياري، بيمسح المتاجر والأكواد الموجودة)
+npm run seed      # بيانات تجربة
+npm run dev       # افتح http://localhost:3000
 ```
 
+`file:./local.db` بيشغّل الموقع على ملف SQLite محلي. في الإنتاج حط رابط Postgres بدل كده.
 أول مرة تفتح `/admin` هيطلب منك تعمل حساب أدمن.
 
 ## النشر على Vercel + Neon
