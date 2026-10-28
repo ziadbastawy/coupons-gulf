@@ -1,0 +1,142 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Readex Pro Variable', system-ui, sans-serif;
+
+  --color-paper: #f2f4f3;
+  --color-card: #ffffff;
+  --color-ink: #142334;
+  --color-ink-soft: #4a5a6b;
+  --color-line: #d5dce0;
+  --color-saffron: #f2b33d;
+  --color-saffron-soft: #fcebc4;
+  --color-saffron-ink: #6b4500;
+  --color-palm: #0e6b4e;
+  --color-palm-soft: #dcefe7;
+  --color-alert: #b42318;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #0f1a24;
+    --color-card: #172533;
+    --color-ink: #e8eef2;
+    --color-ink-soft: #a3b2bf;
+    --color-line: #2a3a4a;
+    --color-saffron: #e7a93a;
+    --color-saffron-soft: #3a2f17;
+    --color-saffron-ink: #fcebc4;
+    --color-palm: #3bb38a;
+    --color-palm-soft: #12352a;
+    --color-alert: #f97066;
+  }
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-saffron);
+  outline-offset: 2px;
+}
+
+/* The ticket: a stub joined to the card by a perforated edge with two notches. */
+.ticket {
+  --notch: 10px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+}
+.ticket-stub {
+  position: relative;
+  border-inline-start: 2px dashed var(--color-line);
+  background: var(--color-saffron-soft);
+  border-start-end-radius: 13px;
+  border-end-end-radius: 13px;
+}
+.ticket-stub::before,
+.ticket-stub::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(var(--notch) * -1 - 1px);
+  width: calc(var(--notch) * 2);
+  height: calc(var(--notch) * 2);
+  border-radius: 999px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+}
+.ticket-stub::before {
+  top: calc(var(--notch) * -1 - 1px);
+  clip-path: inset(50% 0 0 0);
+}
+.ticket-stub::after {
+  bottom: calc(var(--notch) * -1 - 1px);
+  clip-path: inset(0 0 50% 0);
+}
+
+.code-face {
+  font-family: var(--font-sans);
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: 0.06em;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@media (max-width: 560px) {
+  .ticket {
+    grid-template-columns: 1fr;
+  }
+  .ticket-stub {
+    border-inline-start: 0;
+    border-top: 2px dashed var(--color-line);
+    border-start-end-radius: 0;
+    border-end-start-radius: 13px;
+  }
+  .ticket-stub::before,
+  .ticket-stub::after {
+    top: calc(var(--notch) * -1 - 1px);
+    bottom: auto;
+    clip-path: none;
+    background: var(--color-paper);
+  }
+  .ticket-stub::before {
+    inset-inline-start: calc(var(--notch) * -1 - 1px);
+    clip-path: inset(0 0 0 50%);
+  }
+  .ticket-stub::after {
+    inset-inline-start: auto;
+    inset-inline-end: calc(var(--notch) * -1 - 1px);
+    clip-path: inset(0 50% 0 0);
+  }
+}
+
+dialog::backdrop {
+  background: rgb(20 35 52 / 0.55);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  dialog[open] .sheet {
+    animation: sheet-in 220ms ease-out;
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}

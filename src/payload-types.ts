@@ -67,8 +67,12 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    stores: Store;
+    coupons: Coupon;
+    categories: Category;
     media: Media;
+    clicks: Click;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,20 +80,24 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    stores: StoresSelect<false> | StoresSelect<true>;
+    coupons: CouponsSelect<false> | CouponsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    clicks: ClicksSelect<false> | ClicksSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('ar' | 'en') | ('ar' | 'en')[];
   globals: {};
   globalsSelect: {};
-  locale: null;
+  locale: 'ar' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -119,10 +127,180 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stores".
+ */
+export interface Store {
+  id: number;
+  name: string;
+  /**
+   * English, lowercase, e.g. noon → /sa/noon
+   */
+  slug: string;
+  /**
+   * Comma separated, e.g. نون, noon, نون فود
+   */
+  aliases?: string | null;
+  logo?: (number | null) | Media;
+  /**
+   * Hex, e.g. #FEEE00 — used for the logo tile when no logo is uploaded
+   */
+  brandColor?: string | null;
+  countries: ('sa' | 'ae')[];
+  categories?: (number | Category)[] | null;
+  website?: string | null;
+  /**
+   * Shown first on the home page with a "Featured" label
+   */
+  featured?: boolean | null;
+  /**
+   * Higher shows first
+   */
+  popularity?: number | null;
+  /**
+   * Where /go sends shoppers. One row per country.
+   */
+  affiliateLinks?:
+    | {
+        country: 'sa' | 'ae';
+        url: string;
+        network?: ('direct' | 'admitad' | 'arabclicks' | 'boostiny' | 'optimise' | 'amazon' | 'awin' | 'other') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional. Leave empty to build it from the best code automatically.
+   */
+  summary?: string | null;
+  about?: string | null;
+  /**
+   * Short sections: shipping fees, payment, returns, sale seasons…
+   */
+  guide?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Leave empty for the default title
+   */
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  name: string;
+  /**
+   * English, lowercase, e.g. fashion
+   */
+  slug: string;
+  intro?: string | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons".
+ */
+export interface Coupon {
+  id: number;
+  store: number | Store;
+  type: 'code' | 'deal';
+  code?: string | null;
+  status: 'draft' | 'active' | 'expired';
+  title: string;
+  /**
+   * e.g. 15% / خصم 50 ريال
+   */
+  discountLabel: string;
+  conditions?: string | null;
+  countries: ('sa' | 'ae')[];
+  audience?: ('all' | 'new' | 'existing') | null;
+  appOnly?: boolean | null;
+  minOrder?: number | null;
+  maxDiscount?: number | null;
+  exclusive?: boolean | null;
+  /**
+   * Set this every time someone tests the code
+   */
+  verifiedAt?: string | null;
+  expiresAt?: string | null;
+  /**
+   * Lower shows first
+   */
+  sortOrder?: number | null;
+  /**
+   * Optional. Otherwise the store affiliate link for the country is used.
+   */
+  urlOverride?: string | null;
+  clicks?: number | null;
+  worked?: number | null;
+  failed?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clicks".
+ */
+export interface Click {
+  id: number;
+  store?: (number | null) | Store;
+  coupon?: (number | null) | Coupon;
+  country?: string | null;
+  lang?: string | null;
+  /**
+   * Page the click came from
+   */
+  source?: string | null;
+  referrer?: string | null;
+  /**
+   * Sent to the network as a sub-id
+   */
+  clickId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -145,29 +323,10 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -184,20 +343,36 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'stores';
+        value: number | Store;
+      } | null)
+    | ({
+        relationTo: 'coupons';
+        value: number | Coupon;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'clicks';
+        value: number | Click;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -207,10 +382,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -230,11 +405,128 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stores_select".
+ */
+export interface StoresSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  aliases?: T;
+  logo?: T;
+  brandColor?: T;
+  countries?: T;
+  categories?: T;
+  website?: T;
+  featured?: T;
+  popularity?: T;
+  affiliateLinks?:
+    | T
+    | {
+        country?: T;
+        url?: T;
+        network?: T;
+        id?: T;
+      };
+  summary?: T;
+  about?: T;
+  guide?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  seoTitle?: T;
+  seoDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons_select".
+ */
+export interface CouponsSelect<T extends boolean = true> {
+  store?: T;
+  type?: T;
+  code?: T;
+  status?: T;
+  title?: T;
+  discountLabel?: T;
+  conditions?: T;
+  countries?: T;
+  audience?: T;
+  appOnly?: T;
+  minOrder?: T;
+  maxDiscount?: T;
+  exclusive?: T;
+  verifiedAt?: T;
+  expiresAt?: T;
+  sortOrder?: T;
+  urlOverride?: T;
+  clicks?: T;
+  worked?: T;
+  failed?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  intro?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clicks_select".
+ */
+export interface ClicksSelect<T extends boolean = true> {
+  store?: T;
+  coupon?: T;
+  country?: T;
+  lang?: T;
+  source?: T;
+  referrer?: T;
+  clickId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -258,24 +550,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

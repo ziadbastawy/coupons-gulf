@@ -1,67 +1,81 @@
-# Payload Blank Template
+# موقع كوبونات الخليج (السعودية والإمارات)
 
-This template comes configured with the bare minimum to get started on anything you need.
+موقع أكواد خصم عربي أولاً بنسخة إنجليزي، مبني على **Next.js 16 + Payload CMS 3 + PostgreSQL**. لوحة التحكم جوه نفس المشروع على `/admin`، ونفس الـ API هيخدم تطبيق الموبايل بعدين.
 
-## Quick start
+> الاسم "خصمك / Khasmak" مؤقت. غيّره من `src/lib/site.ts`.
+> كل الأكواد في بيانات التجربة (`DEMO…`) وهمية. امسحها وحط الأكواد الحقيقية من الشبكات قبل الإطلاق.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+## الروابط
 
-## Quick Start - local setup
+| الصفحة | عربي (الافتراضي) | إنجليزي |
+| --- | --- | --- |
+| الرئيسية | `/sa` ، `/ae` | `/en/sa` ، `/en/ae` |
+| صفحة متجر | `/sa/noon` | `/en/sa/noon` |
+| فئة | `/sa/category/fashion` | `/en/sa/category/fashion` |
+| كل المتاجر | `/sa/stores` | `/en/sa/stores` |
+| بحث | `/sa/search?q=نون` | `/en/sa/search?q=noon` |
+| تحويل للمتجر | `/go/<coupon-id>?c=sa` | |
+| لوحة التحكم | `/admin` | |
 
-To spin up this template locally, follow these steps:
+`/` بيحوّل الزائر لـ `/sa` أو `/ae` حسب بلده (من هيدرز Vercel أو Cloudflare).
 
-### Clone
+## اللي جاهز في النسخة دي
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+- **صفحة المتجر:** أول سطر إجابة مباشرة (أقوى كود + آخر تجربة)، كروت أكواد على شكل تذكرة، جدول بكل الأكواد، دليل توفير، أسئلة شائعة، متاجر شبيهة.
+- **رحلة الكود:** الكود ظاهر نص في الصفحة (عشان جوجل والـ AI يقروه). زرار "انسخ الكود" بينسخه ويفتح نافذة فيها زرار "روح للمتجر" وتصويت "اشتغل؟".
+- **تتبع النقرات:** `/go/<id>` بيسجل كل نقرة في جدول `clicks` بـ `clickId`، ويضيفه للينك كـ `subid`، ويحوّل على لينك الأفلييت حسب الدولة.
+- **SEO وGEO:** canonical و hreflang لـ ar-SA/en-SA/ar-AE/en-AE، وschema لـ FAQPage و BreadcrumbList و Organization، و`sitemap.xml`، و`robots.txt` فاتح لبوتات ChatGPT وClaude وPerplexity وBing، و`/llms.txt`.
+- **الأداء:** الصفحات بتتكاش (ISR) وبتتحدث كل 10 دقايق، أو فوراً لما تعدّل حاجة في لوحة التحكم.
+- **لوحة التحكم:** بالعربي، والمحتوى بلغتين (اختار اللغة من فوق في صفحة التعديل).
 
-### Development
+## تشغيل محلي
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+```bash
+cp .env.example .env          # وحط DATABASE_URL و PAYLOAD_SECRET
+npm install
+npm run dev                   # http://localhost:3000
+npm run seed                  # بيانات تجربة (اختياري، بيمسح المتاجر والأكواد الموجودة)
+```
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+أول مرة تفتح `/admin` هيطلب منك تعمل حساب أدمن.
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+## النشر على Vercel + Neon
 
-#### Docker (Optional)
+1. اعمل قاعدة بيانات Postgres على [Neon](https://neon.tech) واختار منطقة قريبة (مثلاً Frankfurt).
+2. في Vercel: **Add New → Project** واختار الـ repo ده.
+3. حط متغيرات البيئة: `DATABASE_URL` و `PAYLOAD_SECRET` و `NEXT_PUBLIC_SITE_URL`.
+4. Deploy. الـ migrations بتشتغل لوحدها أول ما السيرفر يقوم.
+5. لصور الشعارات في الإنتاج ضيف تخزين (Vercel Blob أو S3) عن طريق plugin تخزين من Payload، لأن Vercel مش بيحفظ الملفات المرفوعة.
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+لو غيرت الـ collections: شغّل `npx payload migrate:create <name>` وارفع ملف الـ migration مع الكود.
 
-To do so, follow these steps:
+## إضافة محتوى
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+1. **الفئات:** اسم بالعربي والإنجليزي + slug إنجليزي.
+2. **المتاجر:** الاسم، الـ slug (ده الرابط)، الدول، لينك الأفلييت لكل دولة، الشعار، الدليل والأسئلة.
+3. **الكوبونات:** المتجر، الكود، العنوان، الخصم المختصر، الشروط، الدول، وحط **"آخر تجربة"** كل مرة تجرب الكود. الحالة لازم تبقى **فعال** عشان يظهر.
 
-## How it works
+علّم المتجر **"مميز (مدفوع)"** لو المتجر دافع مكان في الرئيسية؛ بيظهر عليه كلمة "مميز".
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+## الهيكل
 
-### Collections
+```
+src/
+  app/(frontend)/[lang]/[country]/   صفحات الموقع
+  app/go/[id]/route.ts               تحويل وتسجيل النقرات
+  app/sitemap.ts, robots.ts, llms.txt
+  collections/                       Stores, Coupons, Categories, Clicks, Media, Users
+  components/                        CouponTicket, CopyCode, StoreTile…
+  lib/site.ts                        الاسم، الدول، اللغات
+  lib/i18n.ts                        كل نصوص الواجهة
+  proxy.ts                           قواعد الروابط (عربي بدون /ar)
+  seed.ts                            بيانات تجربة
+```
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+## الخطوات الجاية
 
-- #### Users (Authentication)
-
-  Users are auth-enabled collections that have access to the admin panel.
-
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
-
-- #### Media
-
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+- ربط APIs شبكات الأفلييت (Admitad وغيرها) لسحب العروض والعمولات تلقائياً.
+- أجنت بيجرب الأكواد ويعلّم المنتهي.
+- صفحات المواسم (رمضان، الجمعة البيضاء، الأيام الوطنية).
+- بحث أسرع بـ Meilisearch لما عدد المتاجر يكبر.
+- تطبيق Expo بيستخدم نفس الـ API (`/api/stores`, `/api/coupons`).
