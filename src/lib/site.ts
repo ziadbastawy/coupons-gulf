@@ -5,7 +5,10 @@ export const SITE = {
     ar: 'أكواد خصم متجرّبة للسعودية والإمارات',
     en: 'Tested discount codes for Saudi Arabia and the UAE',
   },
-  url: (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  // Read at runtime (not baked in at build), so one Docker image works for any domain.
+  get url() {
+    return (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
+  },
 }
 
 export const LANGS = ['ar', 'en'] as const

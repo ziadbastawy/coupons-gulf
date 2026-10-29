@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Self-contained server in .next/standalone for the Docker image.
+  output: 'standalone',
   images: {
     localPatterns: [
       {

@@ -2,7 +2,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { SITE, absUrl, pathFor } from '@/lib/site'
 
-export const revalidate = 3600
+// Read from the database on each request (cheap), never at build time.
+export const dynamic = 'force-dynamic'
 
 /** A short map of the site for AI assistants (llms.txt convention). */
 export async function GET() {

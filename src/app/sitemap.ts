@@ -3,7 +3,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { COUNTRIES, COUNTRY_INFO, LANGS, absUrl, pathFor, type Country } from '@/lib/site'
 
-export const revalidate = 3600
+// Read from the database on each request (cheap), never at build time.
+export const dynamic = 'force-dynamic'
 
 function entry(rest: string[], countries: readonly Country[], lastModified?: string): MetadataRoute.Sitemap {
   const languages: Record<string, string> = {}

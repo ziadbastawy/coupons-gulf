@@ -17,7 +17,7 @@
 | تحويل للمتجر | `/go/<coupon-id>?c=sa` | |
 | لوحة التحكم | `/admin` | |
 
-`/` بيحوّل الزائر لـ `/sa` أو `/ae` حسب بلده (من هيدرز Vercel أو Cloudflare).
+`/` بيحوّل الزائر لـ `/sa` افتراضياً. لو حطيت Cloudflare قدام السيرفر، بيحوّل زوار الإمارات لـ `/ae` تلقائياً.
 
 ## اللي جاهز في النسخة دي
 
@@ -35,7 +35,7 @@
 ```bash
 git clone https://github.com/ziadbastawy/coupons-gulf
 cd coupons-gulf
-printf "DATABASE_URL=file:./local.db\nPAYLOAD_SECRET=localdevsecret123\nNEXT_PUBLIC_SITE_URL=http://localhost:3000\n" > .env
+printf "DATABASE_URL=file:./local.db\nPAYLOAD_SECRET=localdevsecret123\nSITE_URL=http://localhost:3000\n" > .env
 npm install
 npm run seed      # بيانات تجربة
 npm run dev       # افتح http://localhost:3000
@@ -44,15 +44,12 @@ npm run dev       # افتح http://localhost:3000
 `file:./local.db` بيشغّل الموقع على ملف SQLite محلي. في الإنتاج حط رابط Postgres بدل كده.
 أول مرة تفتح `/admin` هيطلب منك تعمل حساب أدمن.
 
-## النشر على Vercel + Neon
+## النشر على سيرفر
 
-1. اعمل قاعدة بيانات Postgres على [Neon](https://neon.tech) واختار منطقة قريبة (مثلاً Frankfurt).
-2. في Vercel: **Add New → Project** واختار الـ repo ده.
-3. حط متغيرات البيئة: `DATABASE_URL` و `PAYLOAD_SECRET` و `NEXT_PUBLIC_SITE_URL`.
-4. Deploy. الـ migrations بتشتغل لوحدها أول ما السيرفر يقوم.
-5. لصور الشعارات في الإنتاج ضيف تخزين (Vercel Blob أو S3) عن طريق plugin تخزين من Payload، لأن Vercel مش بيحفظ الملفات المرفوعة.
+الخطوات كاملة في **[DEPLOY.md](DEPLOY.md)**: سيرفر Ubuntu، و Docker، وأمر واحد بيشغّل الموقع و Postgres و HTTPS.
+التحديث بعد كده: `git pull && docker compose up -d --build`.
 
-لو غيرت الـ collections: شغّل `npx payload migrate:create <name>` وارفع ملف الـ migration مع الكود.
+لو غيرت الـ collections (ضفت حقل مثلاً): شغّل `npx payload migrate:create <name>` وانت متوصل بـ Postgres، وارفع ملف الـ migration مع الكود. السيرفر بيطبقه لوحده أول ما يقوم.
 
 ## إضافة محتوى
 

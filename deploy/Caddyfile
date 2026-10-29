@@ -1,0 +1,15 @@
+# Caddy gets and renews the HTTPS certificate for your domain automatically.
+# DOMAIN comes from .env (e.g. khasmak.com). www redirects to the bare domain.
+
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:3000
+
+	# Long cache for built assets (their file names change on every build).
+	@static path /_next/static/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
