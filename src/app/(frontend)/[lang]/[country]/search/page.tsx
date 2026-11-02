@@ -7,6 +7,8 @@ import { SearchBox } from '@/components/SearchBox'
 import { StoreTile } from '@/components/StoreTile'
 
 export const metadata: Metadata = { robots: { index: false, follow: true } }
+// Results depend on ?q=, so render on every request.
+export const dynamic = 'force-dynamic'
 
 export default async function SearchPage({ params, searchParams }: PageProps<'/[lang]/[country]/search'>) {
   const { lang, country } = await params

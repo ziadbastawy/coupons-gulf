@@ -5,8 +5,9 @@ import { t } from '@/lib/i18n'
 import { getCategories } from '@/lib/data'
 import { CountrySwitch, LangSwitch } from '@/components/Switchers'
 
+// Pages are built on the first visit and then cached (ISR), so the build never needs the database.
 export function generateStaticParams() {
-  return COUNTRIES.map((country) => ({ country }))
+  return []
 }
 
 export default async function CountryLayout({ children, params }: LayoutProps<'/[lang]/[country]'>) {

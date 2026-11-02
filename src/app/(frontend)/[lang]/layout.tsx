@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import { notFound } from 'next/navigation'
-import { SITE, isLang, LANGS, absUrl } from '@/lib/site'
+import { SITE, isLang, absUrl } from '@/lib/site'
 // Self-hosted Arabic + Latin font (no build-time call to Google Fonts).
 import '@fontsource-variable/readex-pro'
 import '../globals.css'
 
+// Pages are built on the first visit and then cached (ISR), so the build never needs the database.
 export function generateStaticParams() {
-  return LANGS.map((lang) => ({ lang }))
+  return []
 }
 
 export async function generateMetadata({ params }: LayoutProps<'/[lang]'>): Promise<Metadata> {

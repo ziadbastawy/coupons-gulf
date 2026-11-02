@@ -1,3 +1,4 @@
+import path from 'path'
 import type { CollectionConfig } from 'payload'
 import { can, canView } from '../lib/permissions'
 import type { User } from '../payload-types'
@@ -19,5 +20,6 @@ export const Media: CollectionConfig = {
       required: true,
     },
   ],
-  upload: true,
+  // Files go to ./media (a Docker volume on the server).
+  upload: { staticDir: path.resolve(process.cwd(), 'media') },
 }
