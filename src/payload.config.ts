@@ -22,6 +22,15 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Never active in production builds: prefilled credentials are sent to the browser.
+    autoLogin:
+      process.env.NODE_ENV === 'development' && process.env.ADMIN_PREFILL_EMAIL
+        ? {
+            email: process.env.ADMIN_PREFILL_EMAIL,
+            password: process.env.ADMIN_PREFILL_PASSWORD,
+            prefillOnly: true,
+          }
+        : false,
     importMap: {
       baseDir: path.resolve(dirname),
     },
