@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { can, canView } from '../lib/permissions'
 
 /** One row per click on "Go to store". Written by /go, read in the admin. */
 export const Clicks: CollectionConfig = {
@@ -6,10 +7,10 @@ export const Clicks: CollectionConfig = {
   labels: { singular: { ar: 'نقرة', en: 'Click' }, plural: { ar: 'النقرات', en: 'Clicks' } },
   admin: { defaultColumns: ['store', 'coupon', 'country', 'source', 'createdAt'], group: { ar: 'التقارير', en: 'Reports' } },
   access: {
-    read: ({ req }) => Boolean(req.user),
+    read: ({ req }) => canView(req.user, 'clicks'),
     create: () => false, // only the server writes clicks (overrideAccess)
     update: () => false,
-    delete: ({ req }) => Boolean(req.user),
+    delete: can('clicks', 'delete'),
   },
   fields: [
     { name: 'store', type: 'relationship', relationTo: 'stores', index: true },

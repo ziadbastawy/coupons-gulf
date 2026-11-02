@@ -301,6 +301,37 @@ export interface Click {
  */
 export interface User {
   id: number;
+  role: 'admin' | 'staff';
+  permissions?: {
+    coupons?: {
+      read?: boolean | null;
+      create?: boolean | null;
+      update?: boolean | null;
+      delete?: boolean | null;
+    };
+    stores?: {
+      read?: boolean | null;
+      create?: boolean | null;
+      update?: boolean | null;
+      delete?: boolean | null;
+    };
+    categories?: {
+      read?: boolean | null;
+      create?: boolean | null;
+      update?: boolean | null;
+      delete?: boolean | null;
+    };
+    media?: {
+      read?: boolean | null;
+      create?: boolean | null;
+      update?: boolean | null;
+      delete?: boolean | null;
+    };
+    clicks?: {
+      read?: boolean | null;
+      delete?: boolean | null;
+    };
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -533,6 +564,49 @@ export interface ClicksSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
+  permissions?:
+    | T
+    | {
+        coupons?:
+          | T
+          | {
+              read?: T;
+              create?: T;
+              update?: T;
+              delete?: T;
+            };
+        stores?:
+          | T
+          | {
+              read?: T;
+              create?: T;
+              update?: T;
+              delete?: T;
+            };
+        categories?:
+          | T
+          | {
+              read?: T;
+              create?: T;
+              update?: T;
+              delete?: T;
+            };
+        media?:
+          | T
+          | {
+              read?: T;
+              create?: T;
+              update?: T;
+              delete?: T;
+            };
+        clicks?:
+          | T
+          | {
+              read?: T;
+              delete?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;

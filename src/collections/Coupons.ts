@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { can, canView } from '../lib/permissions'
 import { revalidateSite } from '../lib/revalidate'
 
 export const Coupons: CollectionConfig = {
@@ -10,8 +11,11 @@ export const Coupons: CollectionConfig = {
     listSearchableFields: ['title', 'code'],
   },
   access: {
-    // Public can only read live coupons; editors see everything.
-    read: ({ req }) => (req.user ? true : { status: { equals: 'active' } }),
+    // Public can only read live coupons; users with access see everything.
+    read: ({ req }) => (req.user ? canView(req.user, 'coupons') : { status: { equals: 'active' } }),
+    create: can('coupons', 'create'),
+    update: can('coupons', 'update'),
+    delete: can('coupons', 'delete'),
   },
   defaultSort: 'sortOrder',
   hooks: {

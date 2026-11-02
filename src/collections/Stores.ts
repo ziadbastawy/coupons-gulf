@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { can, publicOrCanView } from '../lib/permissions'
 import { revalidateSite } from '../lib/revalidate'
 
 const COUNTRY_OPTIONS = [
@@ -13,7 +14,12 @@ export const Stores: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'countries', 'featured', 'updatedAt'],
   },
-  access: { read: () => true },
+  access: {
+    read: publicOrCanView('stores'),
+    create: can('stores', 'create'),
+    update: can('stores', 'update'),
+    delete: can('stores', 'delete'),
+  },
   hooks: { afterChange: [() => revalidateSite()] },
   fields: [
     {
